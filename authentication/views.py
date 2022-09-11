@@ -10,4 +10,5 @@ from authentication.models import User
 def register(request):
     user = User.objects.create(email=request.data['email'])
     user.set_password(request.data['password'])
+    user.save()
     return Response(status=status.HTTP_200_OK)
