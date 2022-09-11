@@ -93,7 +93,7 @@ def challenge_someone(request):
     return Response(status=status.HTTP_202_ACCEPTED)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def join_challenge(request, id):
     challenge = Challenge.objects.get(id=id)

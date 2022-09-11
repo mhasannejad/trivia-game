@@ -49,7 +49,8 @@ def fill_the_dosage_question(request):
         options = []
         for j in i.drugsubsets_set.all():
             options.append({
-                'text': j.dose
+                'text': j.dose,
+                'is_right': False
             })
 
         list_of_possible_suffixes = list(map(lambda x: re.sub('[0123456789]', '', x.dose), i.drugsubsets_set.all()))
@@ -63,15 +64,20 @@ def fill_the_dosage_question(request):
             avrage_of_dose_by_2 = '2 mg/ml'
 
         options.append({
-            'text': avrage_of_dose_by_2
+            'text': avrage_of_dose_by_2,
+            'is_right': True
         })
         random.shuffle(options)
         questions.append(
             {
-                'question': f"which one is not a dosage for {i.name}",
+                'text': f"which one is not a dosage for {i.name} ?",
+                'subject_id':1,
                 'options': options
             }
         )
+
+    with open('qs.json', 'w') as f:
+        f.write(json.dumps(questions))
     return Response(questions)
 
 
