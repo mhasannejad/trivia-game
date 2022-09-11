@@ -12,7 +12,7 @@ urlpatterns = [
     path('challenge/someone/', challenge_someone),
     path('challenge/join/', join_challenge),
     path('challenge/mine/', get_user_challenges),
-    path('challenge/result/<int:id>/', get_challenge_result),
+    path('challenge/result/', get_challenge_result),
     path('challenge/result/mine/', get_user_results),
     path('challenge/submit/', submit_answer),
     path('challenge/get/<int:id>/', get_challenge_details),

@@ -95,8 +95,8 @@ def challenge_someone(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def join_challenge(request, id):
-    challenge = Challenge.objects.get(id=id)
+def join_challenge(request):
+    challenge = Challenge.objects.get(id=request.data['challenge_id'])
 
     challenge.joiner = request.user
     challenge.save()
@@ -105,7 +105,7 @@ def join_challenge(request, id):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_challenge_result(request, id):
+def get_challenge_result(request):
     return Response(
         ChallengeSerializerResult(
             list(map(lambda x: len(x.answers) == 10, Challenge.objects.all()))
