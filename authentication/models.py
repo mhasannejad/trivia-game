@@ -25,6 +25,10 @@ class User(AbstractUser):
         return list(filter(lambda x: len(x.useranswersubmit_set.all()) == 10, self.challenges))
 
     @property
+    def incompleted_challenges(self):
+        return list(filter(lambda x: len(x.useranswersubmit_set.all()) < 10, self.challenges))
+
+    @property
     def stats(self):
         wins_count = 0
         loss_count = 0

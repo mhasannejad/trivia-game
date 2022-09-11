@@ -39,7 +39,7 @@ def get_available_challenges_for_user(request):
 @permission_classes([IsAuthenticated])
 def get_user_challenges(request):
     return Response(
-        ChallengeSerializerList(reversed(request.user.challenges), many=True).data
+        ChallengeSerializerList(reversed(request.user.incompleted_challenges), many=True).data
     )
 
 
