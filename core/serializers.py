@@ -6,9 +6,11 @@ from core.models import Challenge, Question, Option, Subject
 
 
 class UserSerializerLite(ModelSerializer):
+    symbol_name = serializers.ReadOnlyField()
+
     class Meta:
         model = User
-        fields = ['id', 'email']
+        fields = ['id', 'email','symbol_name']
 
 
 class UserSerializerWithStats(ModelSerializer):
@@ -17,7 +19,7 @@ class UserSerializerWithStats(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'stats', 'points']
+        fields = ['id', 'email', 'stats', 'points','symbol_name']
 
 
 class SubjectSerializer(ModelSerializer):

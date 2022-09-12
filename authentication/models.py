@@ -16,6 +16,10 @@ class User(AbstractUser):
     objects = UserAccountManager()
 
     @property
+    def symbol_name(self):
+        return str(self.email).split('@')[0]
+
+    @property
     def challenges(self):
         Challenge = apps.get_model('core', 'Challenge')
         return Challenge.objects.filter(Q(creator=self) | Q(joiner=self))

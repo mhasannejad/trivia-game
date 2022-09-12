@@ -71,7 +71,7 @@ def create_challenge(request):
     )
     challenge.questions.set(questions)
 
-    return Response(status=status.HTTP_201_CREATED)
+    return Response(ChallengeSerializerList(challenge).data,status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
