@@ -11,6 +11,7 @@ urlpatterns = [
     path('challenge/create/', create_challenge),
     path('challenge/someone/', challenge_someone),
     path('challenge/join/', join_challenge),
+    path('challenge/join/invitation/', join_challenge_by_invitation),
     path('challenge/mine/', get_user_challenges),
     path('challenge/result/', get_challenge_result),
     path('challenge/result/mine/', get_user_results),

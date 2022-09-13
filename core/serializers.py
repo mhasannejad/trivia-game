@@ -10,7 +10,7 @@ class UserSerializerLite(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email','symbol_name']
+        fields = ['id', 'email', 'symbol_name']
 
 
 class UserSerializerWithStats(ModelSerializer):
@@ -19,7 +19,7 @@ class UserSerializerWithStats(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'stats', 'points','symbol_name']
+        fields = ['id', 'email', 'stats', 'points', 'symbol_name']
 
 
 class SubjectSerializer(ModelSerializer):
@@ -35,7 +35,17 @@ class ChallengeSerializerList(ModelSerializer):
 
     class Meta:
         model = Challenge
-        fields = ['id', 'creator','joiner', 'subject', 'created_at']
+        fields = ['id', 'creator', 'joiner', 'subject', 'created_at', 'private']
+
+
+class ChallengeSerializerListForUser(ModelSerializer):
+    creator = UserSerializerLite()
+    joiner = UserSerializerLite()
+    subject = SubjectSerializer()
+
+    class Meta:
+        model = Challenge
+        fields = ['id', 'creator', 'joiner', 'subject', 'created_at', 'private', 'invitation_code']
 
 
 class OptionSerializer(ModelSerializer):

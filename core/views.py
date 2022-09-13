@@ -1,4 +1,7 @@
 # Create your views here.
+import random
+import string
+
 from django.db.models import Q
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -21,7 +24,8 @@ def all_subjects(request):
 @api_view(['GET'])
 def get_available_challenges(request):
     return Response(
-        ChallengeSerializerList(Challenge.objects.filter(joiner__isnull=True).order_by('-id'), many=True).data,
+        ChallengeSerializerList(Challenge.objects.filter(joiner__isnull=True).filter(private=False).order_by('-id'),
+                                many=True).data,
         status=status.HTTP_200_OK
     )
 
@@ -30,7 +34,8 @@ def get_available_challenges(request):
 @permission_classes([IsAuthenticated])
 def get_available_challenges_for_user(request):
     return Response(
-        ChallengeSerializerList(Challenge.objects.filter(joiner__isnull=True).filter(~Q(creator=request.user)).order_by('-id'), many=True).data,
+        ChallengeSerializerList(Challenge.objects.filter(joiner__isnull=True).filter(private=False).filter(
+            ~Q(creator=request.user)).order_by('-id'), many=True).data,
         status=status.HTTP_200_OK
     )
 
@@ -39,7 +44,7 @@ def get_available_challenges_for_user(request):
 @permission_classes([IsAuthenticated])
 def get_user_challenges(request):
     return Response(
-        ChallengeSerializerList(reversed(request.user.incompleted_challenges), many=True).data
+        ChallengeSerializerListForUser(reversed(request.user.incompleted_challenges), many=True).data
     )
 
 
@@ -65,13 +70,18 @@ def create_question(request):
 @permission_classes([IsAuthenticated])
 def create_challenge(request):
     questions = Question.objects.filter(subject_id=request.data['subject_id']).order_by('?')[:5]
+    letters = string.ascii_lowercase + str(1234567890)
+    invitation_code = ''.join(random.choice(letters) for i in range(10))
+
     challenge = Challenge.objects.create(
         creator=request.user,
-        subject_id=request.data['subject_id']
+        subject_id=request.data['subject_id'],
+        private=request.data['private'],
+        invitation_code=invitation_code
     )
     challenge.questions.set(questions)
 
-    return Response(ChallengeSerializerList(challenge).data,status=status.HTTP_201_CREATED)
+    return Response(ChallengeSerializerList(challenge).data, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
@@ -101,6 +111,16 @@ def join_challenge(request):
     challenge.joiner = request.user
     challenge.save()
     return Response(status=status.HTTP_202_ACCEPTED)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def join_challenge_by_invitation(request):
+    challenge = Challenge.objects.get(invitation_code=request.data['invitation_code'])
+
+    challenge.joiner = request.user
+    challenge.save()
+    return Response(ChallengeSerializerList(challenge).data, status=status.HTTP_202_ACCEPTED)
 
 
 @api_view(['GET'])

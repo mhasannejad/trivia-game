@@ -26,6 +26,8 @@ class Challenge(models.Model):
     questions = models.ManyToManyField('Question')
     subject = models.ForeignKey('Subject', on_delete=models.SET_NULL, null=True)
     created_at = UnixTimeStampField(auto_now_add=True)
+    private = models.BooleanField(default=False)
+    invitation_code = models.CharField(max_length=10, default='')
 
     @property
     def result(self):
