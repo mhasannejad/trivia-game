@@ -128,7 +128,7 @@ def join_challenge_by_invitation(request):
 def get_challenge_result(request):
     return Response(
         ChallengeSerializerResult(
-            list(map(lambda x: len(x.answers) == 10, Challenge.objects.all()))
+            reversed(list(map(lambda x: len(x.answers) == 10, Challenge.objects.all())))
         ).data
     )
 
@@ -138,7 +138,7 @@ def get_challenge_result(request):
 def get_user_results(request):
     return Response(
         ChallengeSerializerResult(
-            list(filter(lambda x: len(x.useranswersubmit_set.all()) == 10, request.user.challenges)), many=True
+            reversed(list(filter(lambda x: len(x.useranswersubmit_set.all()) == 10, request.user.challenges))), many=True
         ).data
     )
 
