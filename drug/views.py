@@ -144,7 +144,7 @@ def submit_drug_to_prescription(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def get_prescription_with_items_for_moderation(request):
-    if request.user.role is not 1:
+    if request.user.role != 1:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
     prescriptions_with_items_verified_by_morethan_5 = []
     for i in Prescription.objects.all():
@@ -175,7 +175,7 @@ def get_prescription_with_items_for_moderation(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_verification_for_prescription(request):
-    if request.user.role is not 1:
+    if request.user.role != 1:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
     prescription_item = PrescriptionItem.objects.get(id=request.data['prescription_id'])
     PrescriptionVerification.objects.create(
