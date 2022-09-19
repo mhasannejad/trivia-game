@@ -4,12 +4,14 @@ import random
 import re
 from statistics import mean
 
+from django.core.files.storage import FileSystemStorage
+from django.db.models import Q
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from drug.models import Drug, DrugSubsets
-from drug.serializers import DrugSerializer, DrugSubsetSerializer
+from drug.serializers import *
 
 
 @api_view(['GET'])
@@ -71,7 +73,7 @@ def fill_the_dosage_question(request):
         questions.append(
             {
                 'text': f"which one is not a dosage for {i.name} ?",
-                'subject_id':1,
+                'subject_id': 1,
                 'options': options
             }
         )
@@ -97,3 +99,125 @@ def get_subsets_for(request, drug):
 @api_view(['POST'])
 def add_drug_to_prescription(request):
     pass
+
+
+@api_view(['POST'])
+def upload_prescription(request):
+    myfile = request.FILES.get('image')
+    fs = FileSystemStorage()
+    filename = fs.save(myfile.name, myfile)
+    uploaded_file_url = fs.url(filename)
+    Prescription.objects.create(
+        image=uploaded_file_url
+    )
+
+    return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_random_prescription_to_label(request):
+    # get some random pres which is not verified
+    prescriptions = []
+    for i in Prescription.objects.filter(Q(labeled=False)):
+        if len(list(set(map(lambda x: x.pharmacist.id, i.prescriptionitem_set.all())))) < 5:
+            prescriptions.append(i)
+    random.shuffle(prescriptions)
+    return Response(PrescriptionSerializer(prescriptions[0]).data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def submit_drug_to_prescription(request):
+    drugsubset = DrugSubsets.objects.get(id=request.data['drugsubset_id'])
+    prescription = Prescription.objects.get(id=request.data['prescription_id'])
+    PrescriptionItem.objects.create(
+        drug=drugsubset,
+        count=request.data['count'],
+        per_time=request.data['per_time'],
+        pharmacist=request.user,
+        prescription=prescription
+    )
+    return Response(status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def get_prescription_with_items_for_moderation(request):
+    if request.user.role is not 1:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    prescriptions_with_items_verified_by_morethan_5 = []
+    for i in Prescription.objects.all():
+
+        if len(i.pharmacists) >= 5:
+            prescriptions_with_items_verified_by_morethan_5.append(i)
+    random.shuffle(prescriptions_with_items_verified_by_morethan_5)
+    prescription = prescriptions_with_items_verified_by_morethan_5[0]
+    pharmacists_who_submitted = User.objects.filter(id__in=list(set(map(lambda x: x.id, User.objects.filter(
+        prescriptionitem__prescription=prescription)))))
+    object_to_be_send = []
+    for i in pharmacists_who_submitted:
+        presitems = PrescriptionItem.objects.filter(
+            prescription=prescription,
+            pharmacist=i
+        ).filter(~Q(prescriptionverification__verifier=request.user))
+        presitems = list(filter(lambda x: len(x.prescriptionverification_set.all()) <= 5, presitems))
+        if len(presitems) > 0:
+            object_to_be_send.append({
+                'pharmacist': UserSerializerLite(i).data,
+                'prescription_items': PrescriptionItemSerializer(presitems, many=True).data
+            })
+
+    return Response({'prescription': PrescriptionSerializer(prescription).data, 'items': object_to_be_send},
+                    status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_verification_for_prescription(request):
+    if request.user.role is not 1:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    prescription_item = PrescriptionItem.objects.get(id=request.data['prescription_id'])
+    PrescriptionVerification.objects.create(
+        prescription_item=prescription_item,
+        verifier=request.user,
+        is_correct=request.data['is_correct']
+    )
+    return Response(status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def prescription_profile_for_user(request):
+    correct_prescriptions = []
+    wrong_prescriptions = []
+
+    user = User.objects.get(id=request.user.id)
+    for i in user.correct_prescriptions_prescribed:
+        correct_prescriptions.append({
+            'prescription': PrescriptionSerializer(i).data,
+            'presitems': PrescriptionItemSerializerWithResults(i.prescriptionitem_set.filter(pharmacist=user),
+                                                               many=True).data
+        })
+
+    for i in user.wrong_prescriptions_prescribed:
+        wrong_prescriptions.append({
+            'prescription': PrescriptionSerializer(i).data,
+            'presitems': PrescriptionItemSerializerWithResults(i.prescriptionitem_set.filter(pharmacist=user),
+                                                               many=True).data
+        })
+
+    object_to_be_sent = {
+        'user': UserSerializerLite(request.user).data,
+        'correct_prescriptions': correct_prescriptions,
+        'wrong_prescriptions': wrong_prescriptions
+    }
+
+    return Response(object_to_be_sent, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def ranking(request):
+    users = User.objects.all()
+    users = sorted(users, key=lambda x: x.total_prescription_point)
+    return Response(UserSerializerWithPrescriptionStats(reversed(users), many=True).data)

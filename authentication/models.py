@@ -14,6 +14,10 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserAccountManager()
+    role = models.IntegerField(default=0, choices=(
+        (0, 'user'),
+        (1, 'moderator'),
+    ))
 
     @property
     def symbol_name(self):
@@ -27,6 +31,58 @@ class User(AbstractUser):
     @property
     def completed_challenges(self):
         return list(filter(lambda x: len(x.useranswersubmit_set.all()) == 10, self.challenges))
+
+    @property
+    def prescriptions_prescribed(self):
+        PrescriptionModel = apps.get_model('drug', 'Prescription')
+        return PrescriptionModel.objects.filter(prescriptionitem__pharmacist=self)
+
+    @property
+    def total_prescription_point(self):
+        PrescriptionItemModel = apps.get_model('drug', 'PrescriptionItem')
+        presitems = PrescriptionItemModel.objects.filter(
+            pharmacist=self,
+        )
+        sum_points = sum(map(lambda x: x.point, presitems))
+
+        return sum_points
+
+
+    @property
+    def correct_prescriptions_prescribed_len(self):
+        return len(self.correct_prescriptions_prescribed)
+
+    @property
+    def wrong_prescriptions_prescribed_len(self):
+        return len(self.wrong_prescriptions_prescribed)
+
+    @property
+    def correct_prescriptions_prescribed(self):
+        corrects = []
+        for i in self.prescriptions_prescribed:
+            presitems = i.prescriptionitem_set.filter(pharmacist=self)
+            sum_points = sum(map(lambda x: x.point, presitems))
+            print(sum_points)
+            print(len(presitems))
+            print(sum_points / (len(presitems) * 5))
+            if sum_points / (len(presitems) * 5) > 0.8:
+                corrects.append(i)
+        return corrects
+
+    @property
+    def wrong_prescriptions_prescribed(self):
+        wrongs = []
+        for i in self.prescriptions_prescribed:
+            presitems = i.prescriptionitem_set.filter(pharmacist=self)
+            sum_points = sum(map(lambda x: x.point, presitems))
+            if sum_points / (len(presitems) * 5) < 0.8:
+                wrongs.append(i)
+        return wrongs
+
+    @property
+    def prescriptions_checked(self):
+        PrescriptionModel = apps.get_model('drug', 'Prescription')
+        return PrescriptionModel.objects.filter(prescriptionitem__prescriptionverification__verifier=self)
 
     @property
     def incompleted_challenges(self):
@@ -58,6 +114,9 @@ class User(AbstractUser):
             'losses': loss_count,
             'draws': draw_count
         }
+
+    def __str__(self):
+        return f'{self.id} {self.email}'
 
     @property
     def points(self):
