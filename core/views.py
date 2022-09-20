@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from authentication.serializers import UserSerializerProfile
 from core.models import *
 from core.serializers import *
 
@@ -138,7 +139,8 @@ def get_challenge_result(request):
 def get_user_results(request):
     return Response(
         ChallengeSerializerResult(
-            reversed(list(filter(lambda x: len(x.useranswersubmit_set.all()) == 10, request.user.challenges))), many=True
+            reversed(list(filter(lambda x: len(x.useranswersubmit_set.all()) == 10, request.user.challenges))),
+            many=True
         ).data
     )
 
@@ -206,4 +208,15 @@ def get_ranking(request):
         UserSerializerWithStats(
             sorted(User.objects.all(), key=lambda x: x.points, reverse=True), many=True
         ).data
+    )
+
+
+@api_view(['GET'])
+def get_user_profile(request, id):
+    return Response(
+        {
+            **UserSerializerProfile(
+                User.objects.get(id=id)
+            ).data,**{'total_users':len(User.objects.all())}
+        }
     )

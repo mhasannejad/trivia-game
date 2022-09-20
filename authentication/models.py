@@ -20,6 +20,16 @@ class User(AbstractUser):
     ))
 
     @property
+    def ranking(self):
+        users_rank = sorted(User.objects.all(), key=lambda x: x.points, reverse=True)
+        rank = 0
+        for i in users_rank:
+            rank += 1
+            if i.id == self.id:
+                break
+        return rank
+
+    @property
     def symbol_name(self):
         return str(self.email).split('@')[0]
 
@@ -27,6 +37,10 @@ class User(AbstractUser):
     def challenges(self):
         Challenge = apps.get_model('core', 'Challenge')
         return Challenge.objects.filter(Q(creator=self) | Q(joiner=self))
+
+    @property
+    def completed_challenges_len(self):
+        return len(self.incompleted_challenges)
 
     @property
     def completed_challenges(self):
@@ -46,7 +60,6 @@ class User(AbstractUser):
         sum_points = sum(map(lambda x: x.point, presitems))
 
         return sum_points
-
 
     @property
     def correct_prescriptions_prescribed_len(self):
