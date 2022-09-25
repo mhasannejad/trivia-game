@@ -10,6 +10,7 @@ urlpatterns = [
     path('challenge/available/', get_available_challenges),
     path('challenge/available/foruser/', get_available_challenges_for_user),
     path('qustion/create/', create_question),
+    path('question/report/', report_question),
     path('challenge/create/', create_challenge),
     path('challenge/someone/', challenge_someone),
     path('challenge/join/', join_challenge),

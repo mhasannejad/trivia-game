@@ -19,6 +19,27 @@ class Question(models.Model):
     # challenge = models.ManyToManyField(Challenge, null=True)
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True)
 
+    @property
+    def points(self):
+        sum_p = 0
+        for i in self.questionreport_set.all():
+            if i.is_good:
+                sum_p += 1
+            else:
+                sum_p -= 1
+        return sum_p
+
+    @property
+    def is_good(self):
+        return self.points > -4
+
+
+class QuestionReport(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, null=True)
+    comment = models.CharField(max_length=1000, default='')
+    is_good = models.BooleanField(default=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
 
 class Challenge(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True)

@@ -71,6 +71,8 @@ def create_question(request):
 @permission_classes([IsAuthenticated])
 def create_challenge(request):
     questions = Question.objects.filter(subject_id=request.data['subject_id']).order_by('?')[:5]
+    questions = filter(lambda x: x.is_good, questions)
+
     letters = string.ascii_lowercase + str(1234567890)
     invitation_code = ''.join(random.choice(letters) for i in range(10))
 
@@ -97,6 +99,7 @@ def challenge_someone(request):
     subject = Subject.objects.get(id=request.data['subject_id'])
 
     questions = Question.objects.filter(subject=subject).order_by('?')[:5]
+    questions = filter(lambda x: x.is_good, questions)
     print(questions)
     for i in questions:
         challenge.questions.add(i)
@@ -217,17 +220,32 @@ def get_user_profile(request, id):
         {
             **UserSerializerProfile(
                 User.objects.get(id=id)
-            ).data,**{'total_users':len(User.objects.all())}
+            ).data, **{'total_users': len(User.objects.all())}
         }
     )
 
 
 @api_view(['POST'])
 def search_user(request):
-    #level = Level.objects.filter(min_points__lte=request.user.points).order_by('-min_points')[0]
-    #level.icon.path
+    # level = Level.objects.filter(min_points__lte=request.user.points).order_by('-min_points')[0]
+    # level.icon.path
     return Response(
         UserSerializerWithStats(
-            sorted(User.objects.filter(email__contains=request.data['user']), key=lambda x: x.points, reverse=True), many=True
+            sorted(User.objects.filter(email__contains=request.data['user']), key=lambda x: x.points, reverse=True),
+            many=True
         ).data
     )
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def report_question(request):
+    report, created = QuestionReport.objects.get_or_create(
+
+        user=request.user,
+        question_id=request.data['question_id']
+    )
+    report.comment = request.data['comment']
+    report.is_good = request.data['is_good']
+    report.save()
+    return Response(status=status.HTTP_201_CREATED)
