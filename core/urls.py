@@ -6,6 +6,7 @@ urlpatterns = [
     path('subjects/all/', all_subjects),
     path('users/ranking/', get_ranking),
     path('users/profile/<int:id>/', get_user_profile),
+    path('users/search/', search_user),
     path('challenge/available/', get_available_challenges),
     path('challenge/available/foruser/', get_available_challenges_for_user),
     path('qustion/create/', create_question),

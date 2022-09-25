@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from authentication.models import User
-from core.models import Challenge, Question, Option, Subject
+from core.models import Challenge, Question, Option, Subject, Level
 
 
 class UserSerializerLite(ModelSerializer):
@@ -16,10 +16,11 @@ class UserSerializerLite(ModelSerializer):
 class UserSerializerWithStats(ModelSerializer):
     stats = serializers.ReadOnlyField()
     points = serializers.ReadOnlyField()
+    level = serializers.ReadOnlyField()
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'stats', 'points', 'symbol_name']
+        fields = ['id', 'email', 'stats', 'points', 'symbol_name', 'level']
 
 
 class SubjectSerializer(ModelSerializer):
@@ -80,3 +81,9 @@ class ChallengeSerializerResult(ModelSerializer):
     class Meta:
         model = Challenge
         fields = ['id', 'creator', 'joiner', 'result', 'created_at']
+
+
+class LevelSerializer(ModelSerializer):
+    class Meta:
+        model = Level
+        fields = '__all__'

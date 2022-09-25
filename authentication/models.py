@@ -134,3 +134,13 @@ class User(AbstractUser):
     @property
     def points(self):
         return self.stats['wins'] * 5 + self.stats['losses'] * -1
+
+    @property
+    def level(self):
+        LevelModel = apps.get_model('core', 'Level')
+        print(LevelModel.objects.filter(min_points__lte=self.points).order_by('-min_points'))
+        level = LevelModel.objects.filter(min_points__lte=self.points).order_by('-min_points')[0]
+
+        return {
+            'icon': level.icon.name, 'title': level.title
+        }

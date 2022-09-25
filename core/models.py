@@ -67,3 +67,9 @@ class UserAnswerSubmit(models.Model):
     challenge = models.ForeignKey(Challenge, on_delete=models.SET_NULL, null=True)
     question = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True)
     option = models.ForeignKey(Option, on_delete=models.SET_NULL, null=True, default=0)
+
+
+class Level(models.Model):
+    title = models.CharField(max_length=255, default='')
+    icon = models.ImageField(upload_to='levels', default='')
+    min_points = models.IntegerField(default=0)

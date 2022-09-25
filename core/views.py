@@ -220,3 +220,14 @@ def get_user_profile(request, id):
             ).data,**{'total_users':len(User.objects.all())}
         }
     )
+
+
+@api_view(['POST'])
+def search_user(request):
+    #level = Level.objects.filter(min_points__lte=request.user.points).order_by('-min_points')[0]
+    #level.icon.path
+    return Response(
+        UserSerializerWithStats(
+            sorted(User.objects.filter(email__contains=request.data['user']), key=lambda x: x.points, reverse=True), many=True
+        ).data
+    )

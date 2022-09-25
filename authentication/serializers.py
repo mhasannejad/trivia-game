@@ -1,14 +1,19 @@
 from rest_framework.serializers import ModelSerializer, ReadOnlyField
 
 from authentication.models import User
+from core.models import Level
+
+
+
 
 
 class UserSerializerData(ModelSerializer):
     symbol_name = ReadOnlyField()
+    level = ReadOnlyField()
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'symbol_name', 'role']
+        fields = ['id', 'email', 'symbol_name', 'role','level']
 
 
 class UserSerializerProfile(ModelSerializer):
@@ -16,7 +21,8 @@ class UserSerializerProfile(ModelSerializer):
     ranking = ReadOnlyField()
     stats = ReadOnlyField()
     points = ReadOnlyField()
+    level = ReadOnlyField()
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'symbol_name', 'ranking', 'stats', 'points']
+        fields = ['id', 'email', 'symbol_name', 'ranking', 'stats', 'points', 'level']
