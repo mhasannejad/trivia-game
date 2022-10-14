@@ -156,12 +156,17 @@ def submit_answer(request):
     option = Option.objects.get(id=request.data['option_id'])
 
     if challenge.id not in list(map(lambda x: x.id, request.user.challenges)):
+
+
+        print(1)
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
     if question.id not in list(map(lambda x: x.id, challenge.questions.all())):
+        print(2)
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
     if option.id not in list(map(lambda x: x.id, question.options.all())):
+        print(3)
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
     _, created = UserAnswerSubmit.objects.get_or_create(
@@ -241,7 +246,6 @@ def search_user(request):
 @permission_classes([IsAuthenticated])
 def report_question(request):
     report, created = QuestionReport.objects.get_or_create(
-
         user=request.user,
         question_id=request.data['question_id']
     )
