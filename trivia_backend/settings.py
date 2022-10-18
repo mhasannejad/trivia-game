@@ -47,13 +47,15 @@ INSTALLED_APPS = [
     'drug'
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    env('FRONTEND_URL'),
-]
-
-CORS_ORIGIN_WHITELIST = (
-    env('FRONTEND_URL'),
-)
+# CORS_ALLOWED_ORIGINS = [
+#     env('FRONTEND_URL'),
+#     'http://127.0.0.1:5000',
+# ]
+#
+# CORS_ORIGIN_WHITELIST = (
+#     env('FRONTEND_URL'),
+#     'http://127.0.0.1:5000',
+# )
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_METHODS = [
     'DELETE',
