@@ -39,6 +39,31 @@ def init_drugs(request):
     return Response(status=status.HTTP_200_OK)
 
 
+@api_view(['POST'])
+def init_drugs_web(request):
+    f = request.data
+    print(f)
+    print(f)
+    drug = Drug.objects.create(
+        name=f['name']
+    )
+    for i in f['subs']:
+        DrugSubsets.objects.create(
+            drug=drug,
+            melh=i['melh'],
+            drug_form=i['drug_form'],
+            dose=i['form'],
+            route_of_admin=i['route_of_admin'],
+            atc_code=i['atc_code'],
+            ingredient='',
+            clinical='',
+            access_level=i['access_level'],
+            remarks=i['remarks'],
+            date=i['date'],
+        )
+    return Response(status=status.HTTP_200_OK)
+
+
 @api_view(['GET'])
 def fill_the_dosage_question(request):
     drugs = Drug.objects.all()

@@ -4,6 +4,7 @@ from drug.views import *
 
 urlpatterns = [
     path('init/db/', init_drugs),
+    path('init/db/web/', init_drugs_web),
     path('questions/one/', fill_the_dosage_question),
     path('drug/list/', get_drug_list),
     path('prescription/upload/', upload_prescription),
