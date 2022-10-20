@@ -160,8 +160,9 @@ def submit_drug_to_prescription(request):
         drug=drugsubset,
         count=request.data['count'],
         per_time=request.data['per_time'],
+        trading_name=request.data['trading_name'],
         pharmacist=request.user,
-        prescription=prescription
+        prescription=prescription,
     )
     return Response(status=status.HTTP_201_CREATED)
 
@@ -169,15 +170,15 @@ def submit_drug_to_prescription(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def get_prescription_with_items_for_moderation(request):
-    if request.user.role != 1:
+    if User.objects.get(id=request.user.id).is_valid_to_moderate is False:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
-    prescriptions_with_items_verified_by_morethan_5 = []
+    prescriptions_with_items_prescribed_by_morethan_5 = []
     for i in Prescription.objects.all():
 
         if len(i.pharmacists) >= 5:
-            prescriptions_with_items_verified_by_morethan_5.append(i)
-    random.shuffle(prescriptions_with_items_verified_by_morethan_5)
-    prescription = prescriptions_with_items_verified_by_morethan_5[0]
+            prescriptions_with_items_prescribed_by_morethan_5.append(i)
+    random.shuffle(prescriptions_with_items_prescribed_by_morethan_5)
+    prescription = prescriptions_with_items_prescribed_by_morethan_5[0]
     pharmacists_who_submitted = User.objects.filter(id__in=list(set(map(lambda x: x.id, User.objects.filter(
         prescriptionitem__prescription=prescription)))))
     object_to_be_send = []
@@ -206,7 +207,8 @@ def add_verification_for_prescription(request):
     PrescriptionVerification.objects.create(
         prescription_item=prescription_item,
         verifier=request.user,
-        is_correct=request.data['is_correct']
+        is_correct=request.data['is_correct'],
+        comment=request.data['comment']
     )
     return Response(status=status.HTTP_201_CREATED)
 

@@ -162,3 +162,16 @@ class User(AbstractUser):
         return {
             'icon': level.icon.name, 'title': level.title
         }
+
+    @property
+    def is_valid_to_moderate(self):
+        if self.role == 1:
+            return True
+        else:
+            if len(self.prescriptions_prescribed) > 10:
+                if self.correct_prescriptions_prescribed_len / len(self.prescriptions_prescribed) > 0.7:
+                    return True
+                else:
+                    return False
+            else:
+                return False

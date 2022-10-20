@@ -95,7 +95,11 @@ class PrescriptionItem(models.Model):
     count = models.IntegerField(null=True)
     per_time = models.CharField(max_length=255, null=True)
     pharmacist = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    trading_name = models.CharField(max_length=255, null=True)
+    trading_name = models.CharField(max_length=255, null=True,default='')
+
+    @property
+    def verifications(self):
+        return self.prescriptionverification_set.all()
 
     @property
     def point(self):

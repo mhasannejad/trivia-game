@@ -38,16 +38,26 @@ class PrescriptionItemSerializer(ModelSerializer):
         fields = ['id', 'prescription', 'drug', 'pharmacist', 'count', 'per_time']
 
 
+class PrescriptionVerificationSerializer(ModelSerializer):
+    verifier = UserSerializerLite()
+
+    class Meta:
+        model = PrescriptionVerification
+        fields = '__all__'
+
+
 class PrescriptionItemSerializerWithResults(ModelSerializer):
     prescription = PrescriptionSerializer()
     drug = DrugSubsetSerializer()
     pharmacist = UserSerializerLite()
     point = serializers.ReadOnlyField()
     is_verified = serializers.ReadOnlyField()
+    verifications = PrescriptionVerificationSerializer(many=True)
 
     class Meta:
         model = PrescriptionItem
-        fields = ['id', 'prescription', 'drug', 'pharmacist', 'count', 'per_time', 'point', 'is_verified','trading_name']
+        fields = ['id', 'prescription', 'drug', 'pharmacist', 'count', 'per_time', 'point', 'is_verified',
+                  'trading_name', 'verifications']
 
 
 class PrescriptionWithLabelsSerializer(ModelSerializer):
