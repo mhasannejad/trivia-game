@@ -47,6 +47,24 @@ class User(AbstractUser):
         return list(filter(lambda x: len(x.useranswersubmit_set.all()) == 10, self.challenges))
 
     @property
+    def wrong_answers(self):
+        wrongs = []
+        for ch in self.useranswersubmit_set.all():
+            if ch.question.right_answer.id != ch.option.id:
+                wrongs.append(ch.question)
+
+        return wrongs
+
+    @property
+    def right_answers(self):
+        rights = []
+        for ch in self.useranswersubmit_set.all():
+            if ch.question.right_answer.id == ch.option.id:
+                rights.append(ch.question)
+
+        return rights
+
+    @property
     def prescriptions_prescribed(self):
         PrescriptionModel = apps.get_model('drug', 'Prescription')
         return PrescriptionModel.objects.filter(prescriptionitem__pharmacist=self)
@@ -138,7 +156,7 @@ class User(AbstractUser):
     @property
     def level(self):
         LevelModel = apps.get_model('core', 'Level')
-        print(LevelModel.objects.filter(min_points__lte=self.points).order_by('-min_points'))
+        # print(LevelModel.objects.filter(min_points__lte=self.points).order_by('-min_points'))
         level = LevelModel.objects.filter(min_points__lte=self.points).order_by('-min_points')[0]
 
         return {

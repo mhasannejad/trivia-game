@@ -156,8 +156,6 @@ def submit_answer(request):
     option = Option.objects.get(id=request.data['option_id'])
 
     if challenge.id not in list(map(lambda x: x.id, request.user.challenges)):
-
-
         print(1)
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
@@ -253,3 +251,18 @@ def report_question(request):
     report.is_good = request.data['is_good']
     report.save()
     return Response(status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_stats(request):
+    user = User.objects.get(id=request.user.id)
+    return Response(
+        {
+            'total_challenges': len(user.challenges),
+            'completed_challenges': len(user.completed_challenges),
+            'total_right': len(user.right_answers),
+            'total_wrong': len(user.wrong_answers),
+            'total_questions': len(user.wrong_answers)+len(user.right_answers),
+        }
+    )

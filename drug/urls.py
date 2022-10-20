@@ -13,6 +13,7 @@ urlpatterns = [
     path('prescription/submit/drug/', submit_drug_to_prescription),
     path('prescription/submit/verification/', add_verification_for_prescription),
     path('profile/mine/', prescription_profile_for_user),
+    path('profile/stats/', prescription_stats),
     path('ranking/', ranking),
     path('drug/subset/<str:drug>/', get_subsets_for),
 ]

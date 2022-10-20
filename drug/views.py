@@ -246,3 +246,16 @@ def ranking(request):
     users = User.objects.all()
     users = sorted(users, key=lambda x: x.total_prescription_point)
     return Response(UserSerializerWithPrescriptionStats(reversed(users), many=True).data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def prescription_stats(request):
+    user = User.objects.get(id=request.user.id)
+    return Response({
+        'total_prescriptions': len(user.prescriptions_prescribed),
+        'points_earned': user.total_prescription_point,
+        'correct_prescribed': user.correct_prescriptions_prescribed_len,
+        'wrong_prescribed': user.wrong_prescriptions_prescribed_len,
+
+    })

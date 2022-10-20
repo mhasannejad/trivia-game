@@ -47,7 +47,7 @@ class PrescriptionItemSerializerWithResults(ModelSerializer):
 
     class Meta:
         model = PrescriptionItem
-        fields = ['id', 'prescription', 'drug', 'pharmacist', 'count', 'per_time', 'point', 'is_verified']
+        fields = ['id', 'prescription', 'drug', 'pharmacist', 'count', 'per_time', 'point', 'is_verified','trading_name']
 
 
 class PrescriptionWithLabelsSerializer(ModelSerializer):

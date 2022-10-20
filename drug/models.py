@@ -95,6 +95,7 @@ class PrescriptionItem(models.Model):
     count = models.IntegerField(null=True)
     per_time = models.CharField(max_length=255, null=True)
     pharmacist = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    trading_name = models.CharField(max_length=255, null=True)
 
     @property
     def point(self):
@@ -126,3 +127,4 @@ class PrescriptionVerification(models.Model):
     prescription_item = models.ForeignKey(PrescriptionItem, on_delete=models.SET_NULL, null=True)
     verifier = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     is_correct = models.BooleanField(default=False)
+    comment = models.CharField(max_length=500, default='', null=True)
