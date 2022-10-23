@@ -39,6 +39,19 @@ def init_drugs(request):
     return Response(status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+def export_drugs(request):
+    drugs = Drug.objects.all()
+    drug_list = []
+
+    for i in drugs:
+        drug_list.append(i.name)
+
+    with open('drugs_all.json', 'w') as f:
+        f.write(json.dumps(drug_list))
+    return Response({'drugs': json.dumps(drug_list)}, status=status.HTTP_200_OK, )
+
+
 @api_view(['POST'])
 def init_drugs_web(request):
     f = request.data
@@ -145,9 +158,15 @@ def get_random_prescription_to_label(request):
     # get some random pres which is not verified
     prescriptions = []
     for i in Prescription.objects.filter(Q(labeled=False)):
-        if len(list(set(map(lambda x: x.pharmacist.id, i.prescriptionitem_set.all())))) < 5:
-            prescriptions.append(i)
-    random.shuffle(prescriptions)
+        if len(i.pharmacists) < 5:
+            if request.user.id not in map(lambda x: x.id, i.pharmacists):
+                prescriptions.append(i)
+    # random.shuffle(prescriptions)
+    prescriptions = sorted(prescriptions, key=lambda x: len(x.pharmacists), reverse=True)
+    for i in prescriptions:
+        if len(i.pharmacists) > 0:
+            print(len(i.pharmacists), i.pharmacists)
+    print(prescriptions[0])
     return Response(PrescriptionSerializer(prescriptions[0]).data, status=status.HTTP_200_OK)
 
 
@@ -247,6 +266,7 @@ def prescription_profile_for_user(request):
 def ranking(request):
     users = User.objects.all()
     users = sorted(users, key=lambda x: x.total_prescription_point)
+    print(users)
     return Response(UserSerializerWithPrescriptionStats(reversed(users), many=True).data)
 
 

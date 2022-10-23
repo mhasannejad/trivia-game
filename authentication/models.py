@@ -106,7 +106,7 @@ class User(AbstractUser):
         for i in self.prescriptions_prescribed:
             presitems = i.prescriptionitem_set.filter(pharmacist=self)
             sum_points = sum(map(lambda x: x.point, presitems))
-            if sum_points / (len(presitems) * 5) < 0.8:
+            if sum_points / (len(presitems)) < 0.8:
                 wrongs.append(i)
         return wrongs
 

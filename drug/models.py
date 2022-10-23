@@ -86,7 +86,7 @@ class Prescription(models.Model):
         return verifiers
 
     def __str__(self):
-        return f'checked by {len(self.pharmacists)} verified by: {len(self.checkers)} top-label-count: {len(self.top_verified_label)}'
+        return f'id: {self.id} // checked by {len(self.pharmacists)} verified by: {len(self.checkers)} top-label-count: {len(self.top_verified_label)}'
 
 
 class PrescriptionItem(models.Model):
@@ -95,7 +95,7 @@ class PrescriptionItem(models.Model):
     count = models.IntegerField(null=True)
     per_time = models.CharField(max_length=255, null=True)
     pharmacist = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    trading_name = models.CharField(max_length=255, null=True,default='')
+    trading_name = models.CharField(max_length=255, null=True, default='')
 
     @property
     def verifications(self):
