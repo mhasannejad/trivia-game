@@ -18,6 +18,7 @@ class Question(models.Model):
     right_answer = models.ForeignKey('Option', on_delete=models.SET_NULL, null=True, related_name='right_option')
     # challenge = models.ManyToManyField(Challenge, null=True)
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True)
+    is_available = models.BooleanField(default=True)
 
     @property
     def points(self):
@@ -79,7 +80,7 @@ class Challenge(models.Model):
 
 
 class Option(models.Model):
-    text = models.CharField(max_length=255)
+    text = models.CharField(max_length=5000)
     question = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True, related_name='options')
 
 

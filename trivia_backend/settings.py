@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'authentication',
-    'drug'
+    'drug',
+    'leitner'
 ]
 
 # CORS_ALLOWED_ORIGINS = [
