@@ -279,5 +279,4 @@ def prescription_stats(request):
         'points_earned': user.total_prescription_point,
         'correct_prescribed': user.correct_prescriptions_prescribed_len,
         'wrong_prescribed': user.wrong_prescriptions_prescribed_len,
-
     })

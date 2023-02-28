@@ -12,7 +12,7 @@ class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
-
+    block_priority = models.IntegerField(default=1)
     objects = UserAccountManager()
     role = models.IntegerField(default=0, choices=(
         (0, 'user'),
@@ -175,3 +175,13 @@ class User(AbstractUser):
                     return False
             else:
                 return False
+
+    @property
+    def leitner_points(self):
+        total_points = 0
+        user_cards = self.card_set.all()
+        for i in user_cards:
+            total_points = i.level
+        return total_points
+
+
