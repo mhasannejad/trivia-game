@@ -1,7 +1,7 @@
 import json
 import os
 import random
-
+from doit.blocks import *
 from django.shortcuts import render
 
 # Create your views here.
@@ -212,17 +212,17 @@ def leader_board_daroo(request):
 def assign_drug(request, block):
     daroos = Daroo.objects.all()
 
-    with open(os.path.join(PROJECT_ROOT, f'doit/block_{block}.txt'),'r') as f:
-        daroos_in_b1 = (f.read().splitlines())
+    # with open(os.path.join(PROJECT_ROOT, f'doit/block_{block}.txt'),'r') as f:
+    daroos_in_b1 = globals()[f'block_{block}']
 
-        trues = 0
-        for i in daroos_in_b1:
-            for d in daroos:
-                if d.name.lower() in (i.lower()) or (i.lower() in d.name.lower()):
-                    trues += 1
-                    up_d = Daroo.objects.get(id=d.id)
-                    up_d.block_combined = f'{up_d.block_combined},{block}'
-                    up_d.save()
+    trues = 0
+    for i in daroos_in_b1:
+        for d in daroos:
+            if d.name.lower() in (i.lower()) or (i.lower() in d.name.lower()):
+                trues += 1
+                up_d = Daroo.objects.get(id=d.id)
+                up_d.block_combined = f'{up_d.block_combined},{block}'
+                up_d.save()
 
     return Response({'trues': trues}, status=status.HTTP_418_IM_A_TEAPOT)
 
