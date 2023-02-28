@@ -1,4 +1,5 @@
 import json
+import os
 import random
 
 from django.shortcuts import render
@@ -14,6 +15,7 @@ from authentication.models import User
 from authentication.serializers import UserSerializerData
 from leitner.models import Pharma, Prop, Card, Daroo, FlashCard
 from leitner.serializers import *
+from trivia_backend.settings import PROJECT_ROOT
 
 
 @api_view(['POST'])
@@ -209,7 +211,8 @@ def leader_board_daroo(request):
 @api_view(['GET'])
 def assign_drug(request, block):
     daroos = Daroo.objects.all()
-    with open(f'/doit/block_{block}.txt', 'r') as f:
+
+    with open(os.path.join(PROJECT_ROOT, f'doit/block_{block}.txt'),'r') as f:
         daroos_in_b1 = (f.read().splitlines())
 
         trues = 0
