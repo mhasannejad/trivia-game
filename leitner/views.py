@@ -209,7 +209,7 @@ def leader_board_daroo(request):
 @api_view(['GET'])
 def assign_drug(request, block):
     daroos = Daroo.objects.all()
-    with open(f'doit/block_{block}.txt', 'r') as f:
+    with open(f'/doit/block_{block}.txt', 'r') as f:
         daroos_in_b1 = (f.read().splitlines())
 
         trues = 0
