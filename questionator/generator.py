@@ -1,10 +1,12 @@
 import json
 import random
+from itertools import islice
 
 from leitner.models import Daroo
 from questionator.conts.brand_names import names
 from questionator.conts.dnames import daroo_names
 from questionator.conts.categories import pharma_categories, treatment_categories
+from questionator.conts.indications import indications
 from questionator.conts.iranian_generic import products
 from questionator.conts.pregnency import preg_categories
 
@@ -125,4 +127,45 @@ def which_is_a_treatment_category_for_daroo(daroo):
         'options': fina_options,
         'daroo_id': daroo.id,
         'category': 'which_is_a_treatment_category_for_daroo'
+    }
+
+
+def which_is_a_indication_for_daroo(daroo):
+    options = []
+    options.extend(random.sample(indications, 3))
+    daroo_inds = json.loads(daroo.indications)
+    options.append(random.choice(list(daroo_inds.keys())))
+    fina_options = []
+    for i in options:
+        fina_options.append({
+            'option': i,
+            'is_right': i in daroo_inds
+        })
+    random.shuffle(fina_options)
+    return {
+        'question': f'which is an indication for {json.loads(daroo.name)}?',
+        'options': fina_options,
+        'daroo_id': daroo.id,
+        'category': 'which_is_a_indication_for_daroo'
+    }
+
+
+def which_is_a_mechanism_for_daroo(daroo):
+    options = []
+    options.extend(random.sample(indications, 3))
+    daroo_mechs = list(json.loads(daroo.pharmacoDynamics)['mechanism'].items())
+    chosen_mech = random.choice(daroo_mechs)
+    options.append(f'{chosen_mech[0]} => {chosen_mech[1]}')
+    fina_options = []
+    for i in options:
+        fina_options.append({
+            'option': i,
+            'is_right': i in f'{chosen_mech[0]} => {chosen_mech[1]}' or f'{chosen_mech[0]} => {chosen_mech[1]}' in i
+        })
+    random.shuffle(fina_options)
+    return {
+        'question': f'which is a correct mechanism for {json.loads(daroo.name)}?',
+        'options': fina_options,
+        'daroo_id': daroo.id,
+        'category': 'which_is_a_mechanism_for_daroo'
     }
