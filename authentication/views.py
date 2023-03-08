@@ -34,4 +34,13 @@ def login(request):
             'token': str(refresh.access_token),
         }, **dict(UserSerializerData(user).data)}, status=status.HTTP_200_OK)
     else:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        user = User.objects.create(
+            email=request.data['email'],
+        )
+        user.set_password(request.data['password'])
+        refresh = RefreshToken.for_user(user)
+        return Response({**{
+            'refresh': str(refresh),
+            'token': str(refresh.access_token),
+        }, **dict(UserSerializerData(user).data)}, status=status.HTTP_201_CREATED)

@@ -18,7 +18,8 @@ def get_random_question(request):
     random_drugs = Daroo.objects.order_by('?').filter(block_combined__contains=request.user.block_priority)[:100]
     cates = [
         'which_is_brand_name_for',
-        'which_is_dosage_form_for'
+        'which_is_dosage_form_for',
+        'which_is_daroo_for_brand_name'
     ]
     generated = []
     for i in random_drugs:
