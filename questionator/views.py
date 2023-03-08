@@ -19,7 +19,10 @@ def get_random_question(request):
     cates = [
         'which_is_brand_name_for',
         'which_is_dosage_form_for',
-        'which_is_daroo_for_brand_name'
+        'which_is_daroo_for_brand_name',
+        'which_is_correct_pregnancy_category_for',
+        'which_is_correct_pharmacologic_category_for',
+        'which_is_a_treatment_category_for_daroo'
     ]
     generated = []
     for i in random_drugs:
