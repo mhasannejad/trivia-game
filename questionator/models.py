@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 from authentication.models import User
+from leitner.models import Daroo
 
 
 class QCategory(models.Model):
@@ -23,3 +24,5 @@ class UserAnswer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     question = models.ForeignKey(Questionate, on_delete=models.CASCADE, null=True)
     answer = models.ForeignKey(Optionate, on_delete=models.CASCADE, null=True)
+    is_correct = models.BooleanField(default=False)
+    daroo = models.ForeignKey(Daroo, on_delete=models.SET_NULL, null=True)

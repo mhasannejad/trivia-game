@@ -29,7 +29,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [env('HOST'),'10.0.2.2']
+ALLOWED_HOSTS = [env('HOST'), '10.0.2.2']
 
 # Application definition
 
@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'authentication',
     'drug',
-    'leitner'
+    'leitner',
+    'questionator'
 ]
 
 # CORS_ALLOWED_ORIGINS = [
