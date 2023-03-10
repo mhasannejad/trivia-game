@@ -1,6 +1,7 @@
 import json
 import random
 
+from django.db.models import Count
 from django.shortcuts import render
 
 # Create your views here.
@@ -11,6 +12,7 @@ from rest_framework.response import Response
 
 import questionator
 from leitner.models import Daroo
+from leitner.serializers import DarooMiniSerializer
 from questionator.generator import which_is_brand_name_for
 from questionator.models import *
 
@@ -19,7 +21,7 @@ from questionator.models import *
 @permission_classes([IsAuthenticated])
 def get_random_question(request):
     # unicodeData.encode('ascii', 'ignore')
-    random_drugs = Daroo.objects.order_by('?').filter(block_combined__contains=request.user.block_priority)[:150]
+    random_drugs = Daroo.objects.order_by('?').filter(block_combined__contains=request.user.block_priority)
     cates = [
         'which_is_brand_name_for',
         'which_is_dosage_form_for',
@@ -31,14 +33,15 @@ def get_random_question(request):
         'which_is_a_mechanism_for_daroo',
         'which_is_a_attention_case_for_daroo',
         'which_is_a_prescription_attention_case_for_daroo',
-        'which_is_a_prescription_tracking_point_case_for_daroo'
+        'which_is_a_prescription_tracking_point_case_for_daroo',
+        'which_is_a_correct_training_point_for'
     ]
     generated = []
-    for i in random_drugs:
+    for i in range(150):
         q_type = getattr(questionator.generator, random.choice(cates))
 
         try:
-            generated.append(q_type(i))
+            generated.append(q_type(random.choice(random_drugs)))
 
         except Exception as e:
             print('error' + str(e.args))
@@ -52,7 +55,7 @@ def get_random_question(request):
 @api_view(['post'])
 @permission_classes([IsAuthenticated])
 def save_mistakes(request):
-    cat,_ = QCategory.objects.get_or_create(
+    cat, _ = QCategory.objects.get_or_create(
         name=request.data['category']
     )
     question = Questionate.objects.create(
@@ -76,3 +79,63 @@ def save_mistakes(request):
         daroo_id=request.data['daroo_id']
     )
     return Response(status=status.HTTP_201_CREATED)
+
+
+@api_view(['get'])
+@permission_classes([IsAuthenticated])
+def get_my_reports(request):
+    report = UserAnswer.objects.filter(user_id=request.user.id).values('daroo_id').annotate(Count('daroo_id'))
+
+    full_report = []
+    for i in report:
+        daroo = Daroo.objects.get(id=i['daroo_id'])
+        full_report.append({
+            'daroo': {
+                'id': daroo.id,
+                'name': json.loads(daroo.name)
+            },
+            'count': i['daroo_id__count']
+        })
+    return Response(full_report)
+
+
+@api_view(['get'])
+@permission_classes([IsAuthenticated])
+def get_twenty_notes(request):
+    my_answers = UserAnswer.objects.filter(user_id=request.user.id).order_by('?')[:20]
+    encoded_answers = []
+    for i in my_answers:
+        answer = ''
+        for a in i.question.optionate_set.all():
+            if a.is_right:
+                answer = a.option
+        encoded_answers.append({
+            'question': i.question.title,
+            'daroo': {
+                'id': i.daroo.id,
+                'name': json.loads(i.daroo.name)
+            },
+            'answer': answer
+        })
+
+    return Response(
+        encoded_answers
+    )
+
+
+@api_view(['get'])
+@permission_classes([IsAuthenticated])
+def get_daroo_details(request):
+    daroo = Daroo.objects.get(id=request.data['daroo_id'])
+    return Response({
+        'name': json.loads(daroo.name),
+        'brand_names': json.loads(daroo.tradeNames),
+        'pharmacology_category': json.loads(daroo.tradeNames),
+        'treatment_category': json.loads(daroo.tradeNames),
+        'pregnancy_category': json.loads(daroo.tradeNames),
+        'iranian_generic_products': json.loads(daroo.tradeNames),
+        'indications': json.loads(daroo.tradeNames),
+        'pharmacoDynamics': json.loads(daroo.tradeNames),
+        'contraindications': json.loads(daroo.tradeNames),
+
+    })

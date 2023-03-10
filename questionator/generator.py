@@ -11,6 +11,7 @@ from questionator.conts.indications import indications
 from questionator.conts.intractions import attentions
 from questionator.conts.iranian_generic import products
 from questionator.conts.pregnency import preg_categories
+from questionator.conts.training import training_points
 
 
 def which_is_brand_name_for(daroo):
@@ -242,3 +243,23 @@ def random_refer_to_daroo(daroo):
         name = random.choice(json.loads(daroo.tradeNames))
 
     return name
+
+
+def which_is_a_correct_training_point_for(daroo):
+    options = []
+    options.extend(random.sample(training_points, 3))
+    daroo_bns = json.loads(daroo.trainings)
+    options.append(random.choice(daroo_bns))
+    fina_options = []
+    for i in options:
+        fina_options.append({
+            'option': i,
+            'is_right': i in daroo_bns
+        })
+    random.shuffle(fina_options)
+    return {
+        'question': f'which is a correct training point for {random_refer_to_daroo(daroo)}?',
+        'options': fina_options,
+        'daroo_id': daroo.id,
+        'category': 'which_is_a_correct_training_point_for'
+    }

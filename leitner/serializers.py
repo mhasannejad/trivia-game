@@ -24,7 +24,7 @@ class DarooSerializer(ModelSerializer):
         model = Daroo
         fields = ['id', 'clinicalAttentions', 'pregnancyCategory', 'tradeNames', 'contraindications', 'pregnancy',
                   'treatmentCategory', 'name', 'pharmacologyCategory', 'iranianGenericProducts', 'indications',
-                  'pharmacoDynamics', 'interactions', 'sideEffects', 'breastFeeding', 'trainings','block_combined']
+                  'pharmacoDynamics', 'interactions', 'sideEffects', 'breastFeeding', 'trainings', 'block_combined']
 
 
 class DarooSerializerInsert(ModelSerializer):
@@ -39,7 +39,7 @@ class DarooSerializerInsert(ModelSerializer):
         print(str(validated_data).encode('utf-8'))
         for i in validated_data:
             print(i)
-            #print(k)
+            # print(k)
         return obj
 
 
@@ -73,3 +73,9 @@ class FlashCardSerializer(ModelSerializer):
     class Meta:
         model = Card
         fields = ['id', 'level', 'user', 'daroo']
+
+
+class DarooMiniSerializer(ModelSerializer):
+    class Meta:
+        model = Daroo
+        fields = ['id', 'name']
