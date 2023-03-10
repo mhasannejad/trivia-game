@@ -19,7 +19,7 @@ from questionator.models import *
 @permission_classes([IsAuthenticated])
 def get_random_question(request):
     # unicodeData.encode('ascii', 'ignore')
-    random_drugs = Daroo.objects.order_by('?').filter(block_combined__contains=request.user.block_priority)[:100]
+    random_drugs = Daroo.objects.order_by('?').filter(block_combined__contains=request.user.block_priority)[:150]
     cates = [
         'which_is_brand_name_for',
         'which_is_dosage_form_for',
@@ -28,7 +28,10 @@ def get_random_question(request):
         'which_is_correct_pharmacologic_category_for',
         'which_is_a_treatment_category_for_daroo',
         'which_is_a_indication_for_daroo',
-        'which_is_a_mechanism_for_daroo'
+        'which_is_a_mechanism_for_daroo',
+        'which_is_a_attention_case_for_daroo',
+        'which_is_a_prescription_attention_case_for_daroo',
+        'which_is_a_prescription_tracking_point_case_for_daroo'
     ]
     generated = []
     for i in random_drugs:
