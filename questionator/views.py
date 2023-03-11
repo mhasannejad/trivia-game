@@ -107,6 +107,7 @@ def get_twenty_notes(request):
     for i in my_answers:
         answer = ''
         for a in i.question.optionate_set.all():
+
             if a.is_right:
                 answer = a.option
         encoded_answers.append({
