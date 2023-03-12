@@ -13,6 +13,7 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     block_priority = models.IntegerField(default=1)
+    question_categories = models.TextField(max_length=1000, default='')
     objects = UserAccountManager()
     role = models.IntegerField(default=0, choices=(
         (0, 'user'),
@@ -183,5 +184,3 @@ class User(AbstractUser):
         for i in user_cards:
             total_points = i.level
         return total_points
-
-

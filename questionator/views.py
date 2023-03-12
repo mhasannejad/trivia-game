@@ -16,6 +16,22 @@ from leitner.serializers import DarooMiniSerializer
 from questionator.generator import which_is_brand_name_for
 from questionator.models import *
 
+cates = [
+    'which_is_brand_name_for',
+    'which_is_dosage_form_for',
+    'which_is_daroo_for_brand_name',
+    'which_is_correct_pregnancy_category_for',
+    'which_is_correct_pharmacologic_category_for',
+    'which_is_a_treatment_category_for_daroo',
+    'which_is_a_indication_for_daroo',
+    'which_is_a_mechanism_for_daroo',
+    'which_is_a_attention_case_for_daroo',
+    'which_is_a_prescription_attention_case_for_daroo',
+    'which_is_a_prescription_tracking_point_case_for_daroo',
+    'which_is_a_correct_training_point_for',
+    'which_is_correct_lactation_category_for'
+]
+
 
 @api_view(['get'])
 @permission_classes([IsAuthenticated])
@@ -34,8 +50,13 @@ def get_random_question(request):
         'which_is_a_attention_case_for_daroo',
         'which_is_a_prescription_attention_case_for_daroo',
         'which_is_a_prescription_tracking_point_case_for_daroo',
-        'which_is_a_correct_training_point_for'
+        'which_is_a_correct_training_point_for',
+        'which_is_correct_lactation_category_for'
     ]
+
+    if len(request.user.question_categories) > 0:
+        print(request.user.question_categories)
+        cates = str(request.user.question_categories).split(',')
     generated = []
     for i in range(150):
         q_type = getattr(questionator.generator, random.choice(cates))
@@ -50,6 +71,21 @@ def get_random_question(request):
     # q = getattr(questionator.generator, random.choice(cates))
     print(len(generated))
     return Response(generated)
+
+
+@api_view(['get'])
+@permission_classes([IsAuthenticated])
+def get_avalible_question_categories(request):
+    return Response(cates)
+
+
+@api_view(['post'])
+@permission_classes([IsAuthenticated])
+def set_question_categories(request):
+    user = User.objects.get(id=request.user.id)
+    user.question_categories = request.data['question_categories']
+    user.save()
+    return Response(status=status.HTTP_200_OK)
 
 
 @api_view(['post'])

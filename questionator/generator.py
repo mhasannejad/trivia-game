@@ -10,7 +10,7 @@ from questionator.conts.categories import pharma_categories, treatment_categorie
 from questionator.conts.indications import indications
 from questionator.conts.intractions import attentions
 from questionator.conts.iranian_generic import products
-from questionator.conts.pregnency import preg_categories
+from questionator.conts.pregnency import preg_categories, lactation
 from questionator.conts.training import training_points
 
 
@@ -89,6 +89,25 @@ def which_is_correct_pregnancy_category_for(daroo):
         'question': f'which is pregnancy category for {random_refer_to_daroo(daroo)}?',
         'options': fina_options,
         'category': 'which_is_daroo_for_brand_name',
+        'daroo_id': daroo.id,
+    }
+
+
+def which_is_correct_lactation_category_for(daroo):
+    options = []
+    options.extend(random.sample(lactation, 3))
+    options.append(json.loads(daroo.breastFeeding))
+    fina_options = []
+    for i in options:
+        fina_options.append({
+            'option': i,
+            'is_right': i == json.loads(daroo.breastFeeding)
+        })
+    random.shuffle(fina_options)
+    return {
+        'question': f'which is correct lactation category for {random_refer_to_daroo(daroo)}?',
+        'options': fina_options,
+        'category': 'which_is_correct_lactation_category_for',
         'daroo_id': daroo.id,
     }
 

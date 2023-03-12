@@ -46,9 +46,10 @@ block_1 = ["Oxygen", "Nortriptyline", "Ganirelix", "Zinc", "Fluvoxamine", "Cloza
            "Clomipramine", "Primidone", "Drospirenone", "Aripiprazole", "Mianserin", "Trimipramine", "Norgestrel",
            "Cyproheptadine", "Raloxifene", "Neon", "Niacin", "Ciprofloxacin", "Apomorphine", "Topiramate", "Doxazosin",
            "Captopril", "Dexpanthenol", "Hydrochlorothiazide", "Imipramine", "Doxepin", "Ranolazine", "Griseofulvin",
-           "Dopamine",
+           "Dopamine", 'leuprorelin',
            "Cimetidine", "atenolol", 'bisoprolol', 'carvedilol', 'labetalol', 'metoprolol', 'nebivolol', 'propranol',
-           'hydralazine', 'minoxidil', 'Clonidine', 'diltiazem', 'verapamil','nimodipine','losartan','NITROGLYCERIN','ISOSORBIDE ']
+           'hydralazine', 'minoxidil', 'Clonidine', 'diltiazem', 'verapamil', 'nimodipine', 'losartan', 'NITROGLYCERIN',
+           'ISOSORBIDE ']
 block_2 = ["Lactulose", "Mizolastine", "Prucalopride", "Pheniramine", "Triamcinolone", "Ondansetron", "Thymol",
            "Acrivastine", "Estazolam", "Dexlansoprazole", "Aluminium", "Phenobarbital", "Pyridostigmine", "Buclizine",
            "Alprazolam", "Famotidine", "Clarithromycin", "Bleomycin", "Acetazolamide", "Mechlorethamine", "Midazolam",

@@ -11,7 +11,7 @@ class UserSerializerData(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'symbol_name', 'role', 'level', 'is_valid_to_moderate', 'block_priority']
+        fields = ['id', 'email', 'symbol_name', 'role', 'level', 'is_valid_to_moderate', 'block_priority','question_categories']
 
 
 class UserSerializerProfile(ModelSerializer):
