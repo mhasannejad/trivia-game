@@ -56,7 +56,7 @@ def get_random_question(request):
         'which_is_correct_lactation_category_for'
     ]
     print('cates:: '+request.user.question_categories)
-    if len(str(request.user.question_categories).split(',')) > 0:
+    if len(str(request.user.question_categories).strip()) > 0:
         print(request.user.question_categories)
         cates = str(request.user.question_categories).split(',')
     generated = []
