@@ -55,7 +55,7 @@ def get_random_question(request):
         'which_is_a_correct_training_point_for',
         'which_is_correct_lactation_category_for'
     ]
-
+    print(request.user.question_categories)
     if len(str(request.user.question_categories).split(',')) > 0:
         print(request.user.question_categories)
         cates = str(request.user.question_categories).split(',')
