@@ -9,8 +9,10 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 
 import questionator
+from authentication.serializers import UserSerializerData
 from leitner.models import Daroo
 from leitner.serializers import DarooMiniSerializer
 from questionator.generator import which_is_brand_name_for
@@ -85,7 +87,11 @@ def set_question_categories(request):
     user = User.objects.get(id=request.user.id)
     user.question_categories = request.data['question_categories']
     user.save()
-    return Response(status=status.HTTP_200_OK)
+    refresh = RefreshToken.for_user(request.user)
+    return Response({**{
+            'refresh': str(refresh),
+            'token': str(refresh.access_token),
+        }, **dict(UserSerializerData(user).data)},status=status.HTTP_200_OK)
 
 
 @api_view(['post'])

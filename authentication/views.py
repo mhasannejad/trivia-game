@@ -27,6 +27,8 @@ def register(request):
 @api_view(['POST'])
 def login(request):
     user = authenticate(request, email=request.data['email'], password=request.data['password'])
+    print(request.data['email'])
+    print(request.data['password'])
     if user is not None:
         refresh = RefreshToken.for_user(user)
         return Response({**{
@@ -39,6 +41,7 @@ def login(request):
             email=request.data['email'],
         )
         user.set_password(request.data['password'])
+        user.save()
         refresh = RefreshToken.for_user(user)
         return Response({**{
             'refresh': str(refresh),
