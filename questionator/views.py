@@ -58,7 +58,9 @@ def get_random_question(request):
     print('cates:: '+request.user.question_categories)
     if len(str(request.user.question_categories).strip()) > 0:
         print(request.user.question_categories)
+
         cates = str(request.user.question_categories).split(',')
+        cates = [x for x in cates if x != '']
     generated = []
     for i in range(150):
         q_type = getattr(questionator.generator, random.choice(cates))
@@ -85,7 +87,8 @@ def get_avalible_question_categories(request):
 @permission_classes([IsAuthenticated])
 def set_question_categories(request):
     user = User.objects.get(id=request.user.id)
-    user.question_categories = request.data['question_categories']
+    user.question_categories = request.data['question_categories'][0:]
+    print(request.data['question_categories'][1:])
     user.save()
     refresh = RefreshToken.for_user(request.user)
     return Response({**{
